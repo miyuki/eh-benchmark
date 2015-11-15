@@ -12,20 +12,22 @@ def gen_functions(args, out):
 def gen_classes(args, inherit):
     out = args.output
     out.write('static volatile int v;\n')
+    out.write('namespace {\n')
     if inherit:
         out.write('class class_0 { };\n')
         for i in range(1, args.count):
-            out.write('class class_{0} : public class{1} {{ }};\n'.format(i, i-1))
+            out.write('class class_{0} : public class_{1} {{ }};\n'.format(i, i-1))
     else:
         for i in range(0, args.count):
             out.write('class class_{0} {{ }};\n'.format(i))
-
+    out.write('} // anon namespace\n')
+    name = 'hierarchy' if inherit else 'classes'
     for i in range(0, args.count):
-        out.write('void test_classes_{0}()\n'
+        out.write('void test_{0}_{1}()\n'
                   '{{\n'
                   '    try {{\n'
-                  '        throw class_{0}();\n'
-                  '    }}\n'.format(i))
+                  '        throw class_{1}();\n'
+                  '    }}\n'.format(name, i))
         for j in range(args.count-1, -1, -1):
             out.write('    catch (class_{0} &) {{\n'
                       '        v = {0};\n'
