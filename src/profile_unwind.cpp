@@ -1,3 +1,5 @@
+// Profile routine which unwinds the stack
+
 void call_0()
 {
     throw 1;

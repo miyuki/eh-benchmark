@@ -1,3 +1,5 @@
+// Profile routine which throws an exception
+
 int main(int, char**)
 {
     for (long i = 0; i < 10000000; i++) {

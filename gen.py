@@ -21,21 +21,17 @@ def gen_classes(args, inherit):
             out.write('class class_{0} {{ }};\n'.format(i))
 
     for i in range(0, args.count):
-        out.write('__attribute__((noinline)) do_throw_{0}()\n'
-                  '{{\n'
-                  '    throw class_{0}();\n'
-                  '}}\n\n'.format(i))
-    for i in range(0, args.count):
-        out.write('void do_catch_{0}()\n'
+        out.write('void test_classes_{0}()\n'
                   '{{\n'
                   '    try {{\n'
-                  '        do_throw_{0}();\n'
+                  '        throw class_{0}();\n'
                   '    }}\n'.format(i))
         for j in range(args.count-1, -1, -1):
             out.write('    catch (class_{0} &) {{\n'
                       '        v = {0};\n'
                       '    }}\n'.format(j))
         out.write('}\n\n')
+
 
 def gen_calls(args):
     out = args.output
@@ -47,11 +43,16 @@ def gen_calls(args):
                   '    call_{1}();\n'
                   '    v = {1};\n'
                   '}}\n\n'.format(i, i-1))
+        out.write('void test_call_{0}() {{\n'
+                  '    try {{;\n'
+                  '        call_{1}();\n'
+                  '    }} catch (int) {{ }}\n'
+                  '}}\n\n'.format(i, i-1))
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('type', choices=['func', 'class', 'hierarchy', 'calls'],
+    parser.add_argument('type', choices=['func', 'classes', 'hierarchy', 'calls'],
                         help='type of item')
     parser.add_argument('--output', '-o', type=argparse.FileType('w'),
                         default=sys.stdout,
@@ -61,7 +62,7 @@ def main():
     args = parser.parse_args()
     if args.type == 'func':
         gen_functions(args)
-    elif args.type == 'class':
+    elif args.type == 'classes':
         gen_classes(args, False)
     elif args.type == 'hierarchy':
         gen_classes(args, True)
