@@ -6,9 +6,11 @@ import sys
 
 def gen_functions(args, out):
     for i in range(0, args.count):
-        out.write('__attribute__((used)) int func_{0}(int x) {{ return x + {0}; }}\n'.format(i))
+        args.output.write('__attribute__((used)) int func_{0}(int x) '
+                          '{{ return x + {0}; }}\n'.format(i))
 
-def gen_classes(args, out, inherit):
+def gen_classes(args, inherit):
+    out = args.output
     out.write('static volatile int v;\n')
     if inherit:
         out.write('class class_0 { };\n')
@@ -35,10 +37,12 @@ def gen_classes(args, out, inherit):
                       '    }}\n'.format(j))
         out.write('}\n\n')
 
-def gen_calls(args, out):
-    out.write('__attibute__((noinline)) void call_0(void);\n')
+def gen_calls(args):
+    out = args.output
+    out.write('static volatile int v;\n')
+    out.write('__attribute__((noinline)) void call_0(void);\n')
     for i in range(1, args.count):
-        out.write('__attibute__((noinline)) void call_{0}() {{\n'
+        out.write('__attribute__((noinline)) void call_{0}() {{\n'
                   '    v = {0};\n'
                   '    call_{1}();\n'
                   '    v = {1};\n'
@@ -47,17 +51,22 @@ def gen_calls(args, out):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('type', choices=['func', 'class', 'calls'],
+    parser.add_argument('type', choices=['func', 'class', 'hierarchy', 'calls'],
                         help='type of item')
+    parser.add_argument('--output', '-o', type=argparse.FileType('w'),
+                        default=sys.stdout,
+                        help='output file (default: stdout)')
     parser.add_argument('--count', '-c', type=int,
                         help='number of items to generate', default=10)
     args = parser.parse_args()
     if args.type == 'func':
-        gen_functions(args, sys.stdout)
+        gen_functions(args)
     elif args.type == 'class':
-        gen_classes(args, sys.stdout, False)
+        gen_classes(args, False)
+    elif args.type == 'hierarchy':
+        gen_classes(args, True)
     elif args.type == 'calls':
-        gen_calls(args, sys.stdout)
+        gen_calls(args)
     else:
         assert(False)
 

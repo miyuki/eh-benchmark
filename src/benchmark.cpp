@@ -3,8 +3,7 @@
 #include <cassert>
 #include <cstdlib>
 
-//bool USE_PAPI;
-#define USE_PAPI 0
+#define USE_PAPI 1
 
 #define NOINLINE __attribute__((noinline,noclone))
 

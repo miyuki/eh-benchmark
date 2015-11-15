@@ -34,7 +34,7 @@ void test()
 }
 ```
 
-Measure number of cycles required to unwind the stack, depending on number of frames being unwound.
+Measure number of cycles required to unwind the stack, depending on the number of frames being unwound.
 
 ### Classes
 
@@ -54,6 +54,8 @@ void test_throw_0()
     try {
         throw class_0();
     } catch(class_0 &) {
+        v = 0;
+    } catch(class_1 &) {
 // ...
     } catch(class_9 &) {
         v = 9;
@@ -62,7 +64,7 @@ void test_throw_0()
 ```
 
 Measure time required to handle exception depending on total number of classes and
-class of object being thrown.
+class of the object being thrown.
 
 ### Class hierarchy
 
@@ -83,6 +85,8 @@ void test_throw_0()
     try {
         throw class_0();
     } catch(class_9 &) {
+        v = 9;
+    } catch(class_8 &) {
 // ...
     } catch(class_0 &) {
         v = 0;
@@ -91,5 +95,8 @@ void test_throw_0()
 ```
 
 Measure time required to handle exception depending on total number of classes and
-class of object being thrown.
+class of the object being thrown.
+
+## References
+1. Technical Report on C++ Performance [TR18015](http://www.open-std.org/jtc1/sc22/wg21/docs/TR18015.pdf)
 
