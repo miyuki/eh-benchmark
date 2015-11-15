@@ -3,14 +3,14 @@
 #include <vector>
 #include <papi.h>
 
-/// Number of iterations for each benchmark
+/// Number of iterations for each benchmark.
 const size_t num_iter = 1000000;
 
-/// Bechmark Objective C exception hadling
+/// Bechmark Objective C exception hadling.
 extern "C" void objc_test();
 
-/// Throw int. Used by test_call_<N>
-void call_0()
+/// Throw an int. Used by test_call_<N>.
+__attribute__((noinline)) void call_0()
 {
     throw 1;
 }
@@ -106,7 +106,7 @@ static const test_vector_t hierarchy_tests {
     {49, &test_hierarchy_49},
 };
 
-/// Output error message, usage and exit
+/// Output error message, usage and exit.
 static void usage(const char *msg)
 {
     std::cerr << msg
@@ -114,7 +114,7 @@ static void usage(const char *msg)
               << "    benchmark {calls|classes|objc|hierarchy}\n";
 }
 
-/// Output error message and exit
+/// Output error message and exit.
 static void fail(const char *msg)
 {
     std::cerr << "Error: " << msg << '\n';
@@ -132,7 +132,7 @@ static void papi_fail(int rc, const char *msg)
 
 int main(int argc, char** argv)
 {
-    // Parse and validate command-line arguments
+    // Parse and validate command-line arguments.
     if (argc != 2)
         usage("Invalid number of arguments");
 
@@ -160,6 +160,7 @@ int main(int argc, char** argv)
         fail("failed to init PAPI libarary");
 
     // Create and fill event set with 2 events: total cycles and total insns.
+    // TODO: implement RAII wrappers for PAPI.
     int event_set = PAPI_NULL;
     rc = PAPI_create_eventset(&event_set);
     if (rc != PAPI_OK)
@@ -171,11 +172,11 @@ int main(int argc, char** argv)
     if (rc != PAPI_OK)
         papi_fail(rc, "failed to add total insns counter");
 
-    // Warm up
+    // Warm up.
     for (const test_t& test : *test_vec)
         test.second();
 
-    // Output CSV header
+    // Output CSV header.
     std::cout << "test,tot_cyc,tot_insn,iter\n";
 
     enum counter_t {
@@ -185,18 +186,18 @@ int main(int argc, char** argv)
     };
     long long counters[CNT_NUM];
 
-    // Benchmark
+    // Benchmark.
     for (const test_t& test : *test_vec) {
-        // Start counters
+        // Start counters.
         rc = PAPI_start(event_set);
         if (rc != PAPI_OK)
             papi_fail(rc, "failed to start counters");
 
-        // Run tests
+        // Run tests.
         for (size_t i = 0; i < num_iter; i++)
             test.second();
 
-        // Stop counters and output one CSV row
+        // Stop counters and output one CSV row.
         rc = PAPI_stop(event_set, counters);
         if (rc != PAPI_OK)
             papi_fail(rc, "failed to stop counters");
@@ -209,7 +210,7 @@ int main(int argc, char** argv)
                   << ',' << num_iter << '\n';
     }
 
-    // Destroy PAPI event set
+    // Destroy PAPI event set.
     rc = PAPI_cleanup_eventset(event_set);
     if (rc != PAPI_OK)
         papi_fail(rc, "failed to cleanup event set");
@@ -217,7 +218,6 @@ int main(int argc, char** argv)
     if (rc != PAPI_OK)
         papi_fail(rc, "failed to destroy event set");
 
-    // TODO: implement RAII wrappers for PAPI
     return 0;
 }
 
