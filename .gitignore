@@ -1,4 +1,5 @@
 /build
+/config.sh
 /eh_perf_vtune
 .ipynb_checkpoints
 *.pyc

@@ -1,105 +1,32 @@
-## Benchmarks
-### Nested calls
-Testcase:
+## Contents
 
-```C++
-static volatile int v;
+This repository contains several synthetic benchmarks of exception handling routines,
+such as exception allocation and throwing, stack unwinding and handler search.
 
-__attribute__((noinline)) void call_0()
-{
-    throw 1;
-}
+It also has some test cases which can be used to profile the mentioned routines.
 
-__attribute__((noinline)) void call_1()
-{
-    v = 0;
-    test_0();
-    v = 1;      // Prevent tail call optimization
-}
+## Requirements
 
-// ...
+The code is written in C++14 and Objective C and requies GCC 4.9 or later to
+compile it.
 
-__attribute__((noinline)) void call_9()
-{
-    v = 8;
-    test_8();
-    v = 9;
-}
+The benchmarks use [PAPI](http://icl.cs.utk.edu/papi/) library to read
+the performance counters. It is available in major Linux distros (for example,
+`libpapi-dev` package in Debian)
 
-void test_call_9()
-{
-    try {
-        test_8();
-    } catch(int) { }
-}
-```
+CMake 3.0 or later is required to build the tests.
 
-Measure number of cycles required to unwind the stack, depending on the number of frames being unwound.
+## Usage
 
-### Classes
+Run [make_all.sh](make_all.sh) to compile and [bench.sh](bench.sh) to benchmark.
+The result will be output to `result` directory.
 
-Testcase:
+Rename [config.sh.example](config.sh.example) into `config.sh` and modify to set
+custom path to GCC.
 
-```C++
-static volatile int v;
+## Results
 
-// Define N empty classes
-namespace {
-class class_0 { };
-// ...
-class class_9 { };
-} // anon. namespace
-
-// Define N functions like this:
-void test_throw_0()
-{
-    try {
-        throw class_0();
-    } catch(class_0&) {
-        v = 0;
-    } catch(class_1&) {
-// ...
-    } catch(class_9&) {
-        v = 9;
-    }
-}
-```
-
-Measure time required to handle exception depending on total number of classes and
-class of the object being thrown.
-
-### Class hierarchy
-
-Testcase:
-
-```C++
-static volatile int v;
-
-// Define hierarchy of N classes
-namespace {
-class class_0 { };
-class class_1 : public class_0 { };
-// ...
-class class_9 : public class_8 { };
-} // anon. namespace
-
-// Define N functions like this:
-void test_throw_0()
-{
-    try {
-        throw class_0();
-    } catch(class_9&) {
-        v = 9;
-    } catch(class_8&) {
-// ...
-    } catch(class_0&) {
-        v = 0;
-    }
-}
-```
-
-Measure time required to handle exception depending on total number of classes and
-class of the object being thrown.
+The [results](result/result.ipynb) are avaiable as IPython notebook.
 
 ## References
 1. Technical Report on C++ Performance [TR18015](http://www.open-std.org/jtc1/sc22/wg21/docs/TR18015.pdf)

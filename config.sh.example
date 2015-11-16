@@ -1,0 +1,3 @@
+export GCC_BIN='/opt/gcc-5.2.0-fdo/bin'
+export GCC_LIB='/opt/gcc-5.2.0-fdo/lib64'
+
