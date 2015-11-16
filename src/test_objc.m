@@ -1,6 +1,6 @@
 #import <objc/objc.h>
 
-void objc_test()
+void objc_test(void)
 {
     @try {
         @throw nil;

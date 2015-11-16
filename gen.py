@@ -51,6 +51,15 @@ def gen_calls(args):
                   '    }} catch (int) {{ }}\n'
                   '}}\n\n'.format(i, i-1))
 
+def gen_test_vector(args):
+    out = args.output
+    name = args.type
+    for i in range(0, args.count):
+        out.write('void test_{}_{}();\n'.format(name, i))
+    out.write('\nstatic const test_vector_t {}_tests {{\n'.format(name))
+    for i in range(0, args.count):
+        out.write('    {{{0}, &test_{1}_{0}}},\n'.format(i, name))
+    out.write('};\n')
 
 def main():
     parser = argparse.ArgumentParser()
@@ -61,17 +70,24 @@ def main():
                         help='output file (default: stdout)')
     parser.add_argument('--count', '-c', type=int,
                         help='number of items to generate', default=10)
+    parser.add_argument('--vector', action='store_true',
+                        help='generate initializer for test vector')
     args = parser.parse_args()
-    if args.type == 'func':
-        gen_functions(args)
-    elif args.type == 'classes':
-        gen_classes(args, False)
-    elif args.type == 'hierarchy':
-        gen_classes(args, True)
-    elif args.type == 'calls':
-        gen_calls(args)
+    if args.vector:
+        if args.type == 'func':
+            args.error('func is incompatible with --vector')
+        gen_test_vector(args)
     else:
-        assert(False)
+        if args.type == 'func':
+            gen_functions(args)
+        elif args.type == 'classes':
+            gen_classes(args, False)
+        elif args.type == 'hierarchy':
+            gen_classes(args, True)
+        elif args.type == 'calls':
+            gen_calls(args)
+        else:
+            assert(False)
 
 
 if __name__ == '__main__':

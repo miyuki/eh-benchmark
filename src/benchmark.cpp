@@ -79,32 +79,8 @@ static const test_vector_t call_tests {
     {9, &test_call_9},
 };
 
-static const test_vector_t classes_tests {
-    {0, &test_classes_0},
-    {10, &test_classes_10},
-    {20, &test_classes_20},
-    {30, &test_classes_30},
-    {40, &test_classes_40},
-    {49, &test_classes_49},
-};
-
-static const test_vector_t hierarchy_tests {
-    {0, &test_hierarchy_0},
-    {1, &test_hierarchy_1},
-    {2, &test_hierarchy_2},
-    {3, &test_hierarchy_3},
-    {4, &test_hierarchy_4},
-    {5, &test_hierarchy_5},
-    {6, &test_hierarchy_6},
-    {7, &test_hierarchy_7},
-    {8, &test_hierarchy_8},
-    {9, &test_hierarchy_9},
-    {10, &test_hierarchy_10},
-    {20, &test_hierarchy_20},
-    {30, &test_hierarchy_30},
-    {40, &test_hierarchy_40},
-    {49, &test_hierarchy_49},
-};
+#include "classes_tests.def"
+#include "hierarchy_tests.def"
 
 /// Output error message, usage and exit.
 static void usage(const char *msg)
@@ -112,6 +88,7 @@ static void usage(const char *msg)
     std::cerr << msg
               << "\nUsage:\n"
               << "    benchmark {calls|classes|objc|hierarchy}\n";
+    exit(EXIT_FAILURE);
 }
 
 /// Output error message and exit.
